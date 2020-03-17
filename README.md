@@ -1,24 +1,42 @@
-# Population growth model
+# ENGG*3130 Final Project: 
+Group Members: Cyan Roepcke, Sebastian Atkinson-Bertola, Jared Patchett, Joyce Li
 
-A population growth model and simulation of three species in a forest. The defined interactions between species affects their number and survival. It can be used to produce more realistic scenario with real world parameters to depict the survival of certain species co-existing together
+## Introduction
+Population models are used to analyze the rate of growth and decay of species under study. In real-world applications, these models can help determine the safest maximum number for harvest, the impact of invasive species, the behavior of epidemics, the factors that affect endangered species, and so forth.
 
-[![HitCount](http://hits.dwyl.io/adityadua24/populationGrowthModel.svg)](http://hits.dwyl.io/adityadua24/populationGrowthModel)
+In our best interest, the objective of this project is to use and examine the [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel) for its system behaviour (i.e., interactions between the various species), as well as identify any strengths, weaknesses, and limitations of the model.
 
-## Species Modelled
+The [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel), made by Aditya Dua, is a simulation of three species inhabiting a forest together. The interactions between the species are pre-established, which impacts their population and chance of survival. The project is written in MATLAB, so the model should be opened in MATLAB for execution.
 
-Foxes
+## Procedure
+The following scenarios will be tested with the project model:
 
-Rabbits
+* Mushroom < Rabbit < Fox
+* Mushroom < Rabbit & Mouse < Fox
+* Mushroom < Rabbit < Fox & Owl
+* Mushroom < Rabbit < Fox < Hunter
 
-Mushrooms(with some magic powers)
+In other words, the population model will have a food chain with at least 3 different species, and a different prey or predator species can be added to the system.
 
-## Want to _Run_ it Yourself?!
+## Results & Discussion
+##### IN PROGRESS
 
-Simply clone the repo and run the populationGrowthModel.m file.
+## Next Steps
+##### IN PROGRESS
 
-## Simulation screenshot
 
-Click on the image below to watch the simulation video on YouTube.
+## Conclusion
+##### IN PROGRESS
 
-[![Simulation](./imgs/2.PNG)](https://youtu.be/wr_xjnttu9I)
+## Demo It Yourself
 
+To try the model yourself, clone the repository by entering:
+
+```bash
+git clone https://github.com/CyanRoepcke/FinalProject3130
+```
+Then, run the `populationGrowthModel.m` file on MATLAB.
+
+
+## Contributions
+If you would like to make a pull request, feel free to contribute. For any significant changes, please open an issue on this repository.
