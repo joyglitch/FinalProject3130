@@ -6,7 +6,7 @@ Population models are used to analyze the rate of growth and decay of species un
 
 In our best interest, the objective of this project is to use and examine the [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel) for its system behaviour (i.e., interactions between the various species), as well as identify any strengths, weaknesses, and limitations of the model.
 
-The [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel), made by Aditya Dua, is a simulation of three species inhabiting a forest together. The interactions between the species are pre-established, which impacts their population and chance of survival. The project is written in MATLAB, so the model should be opened in MATLAB for execution.
+The [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel), made by Aditya Dua, is a simulation of three species inhabiting a forest together. The interactions between the species are pre-established, which impacts their population and chance of survival. The project is orginally written in MATLAB, so the model is converted to run in Python for execution.
 
 ## Procedure
 The following scenarios will be tested with the project model:
@@ -17,6 +17,8 @@ The following scenarios will be tested with the project model:
 * Mushroom < Rabbit < Fox < Hunter
 
 In other words, the population model will have a food chain with at least 3 different species, and a different prey or predator species can be added to the system.
+
+To test the accuracy of this model, ecological data must be collected for the species used in the model.
 
 ## Results & Discussion
 ##### IN PROGRESS
