@@ -1,5 +1,3 @@
-Omni Branch Added
-
 # ENGG*3130 Final Project: 
 Group Members: Cyan Roepcke, Sebastian Atkinson-Bertola, Jared Patchett, Joyce Li
 
