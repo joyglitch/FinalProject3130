@@ -3,9 +3,24 @@ from __future__ import print_function, division
 import sys
 
 import numpy as np
-import matplotlib.pyplot as plt
+import random
 
+import matplotlib.pyplot as plt
+from matplotlib import colors
 from matplotlib import animation
+from matplotlib import rc
+rc('animation', html='html5')
+
+from Animal import Animal
+from Animal import Fox
+from Animal import Rabbit
+from Food import Food
+from Food import Mushroom
+
+cmap = colors.ListedColormap(['White','Blue','Green','Red'])
+
+# #normalizes colour range values
+n = colors.Normalize(vmin=0,vmax=3)
 
 """
 For animation to work in the notebook, you might have to install
