@@ -19,7 +19,7 @@ from Food import Mushroom
 
 cmap = colors.ListedColormap(['White','Blue','Green','Red'])
 
-# #normalizes colour range values
+# normalizes colour range values
 n = colors.Normalize(vmin=0,vmax=3)
 
 """
@@ -41,6 +41,7 @@ class Ecosystem:
         self.numFoxes = []
         self.numRabbits = []
         self.numMushrooms = []
+        self.naturalDeaths = []
         self.foxesDead = False
         self.rabbitsDead = False
         # ecosystem parameters
@@ -203,12 +204,13 @@ class Ecosystem:
                 mushroom.asexualReproduction(self.mush_array)
 
     def removeTheDead(self):
-        # check if animals have died of starvation
-        self.foxesDead = self.hungerCheck(self.foxes_array)
-        self.rabbitsDead = self.hungerCheck(self.rabbits_array)
+        self.naturalDeaths = []
+        # check if animals have died of natural causes
+        self.checkNaturalDeath(self.foxes_array)
+        self.checkNaturalDeath(self.rabbits_array)
 
         if self.decomp:
-            # mushrooms decompose dead animals that die from starvation
+            # mushrooms decompose dead animals that die from natural causes
             self.decomposeTheDead()
 
         # remove dead animals
@@ -221,39 +223,33 @@ class Ecosystem:
         # remove mushrooms that have been eaten
         self.mush_array = [ mush for mush in self.mush_array if not mush.eaten]
 
-    def hungerCheck(self, animalArray):
-        everyoneDead = True
-        if len(animalArray) == 0:
-            return everyoneDead
+    def checkNaturalDeath(self, animalArray):
+        # check all animals for natural death
+        for animal in animalArray:
+            # died from starvation
+            self.hungerCheck(animal)
+            # died from old age
+            self.ageCheck(animal)
 
-        maxHunger = animalArray[0].maxHunger
-        for i in range(0, len(animalArray)):
-            hunger = animalArray[i].hunger
-            if hunger > maxHunger:
-                animalArray[i].beStill = True
-            else:
-                everyoneDead = False
+    def hungerCheck(self, animal):
+        # check if animal dies from starvation
+        if animal.hunger > animal.maxHunger:
+            animal.beStill = True
+            self.naturalDeaths.append(animal)
 
-        return everyoneDead
+    def ageCheck(self, animal):
+        # check if animal dies of old age
+        if animal.steps > animal.lifeSpan:
+            animal.beStill = True
+            self.naturalDeaths.append(animal)
 
     def decomposeTheDead(self):
-        # mushrooms decompose dead animals that die from starvation
-        starved_foxes = [fox for fox in self.foxes_array if fox.beStill]
-        starved_rabbits = [rabbit for rabbit in self.rabbits_array if rabbit.beStill]
-
-        for i in range(max(len(starved_foxes), len(starved_rabbits))):
-            # there are starved foxes
-            if i < len(starved_foxes):
-                x = starved_foxes[i].location[0]
-                y = starved_foxes[i].location[1]
-                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
-                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
-            # there are starved rabbits
-            if i < len(starved_rabbits):
-                x = starved_rabbits[i].location[0]
-                y = starved_rabbits[i].location[1]
-                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
-                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
+        # mushrooms decompose dead animals that die from starvation or old age
+        for deadAnimal in self.naturalDeaths:
+            x = deadAnimal.location[0]
+            y = deadAnimal.location[1]
+            decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
+            decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
 
     def plotPopulationHist(self):
         x = range(len(self.numFoxes))

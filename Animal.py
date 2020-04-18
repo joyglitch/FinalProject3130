@@ -11,6 +11,7 @@ class Animal:
     location = [0,0]
     probRepro = 0
     sense = 3
+    lifeSpan = 100
     beStill = False
     mated = False
 
@@ -157,6 +158,7 @@ class Animal:
 #########################################################################################################
 class Rabbit(Animal):
 
+    lifeSpan = 84 # 7 years
     probRepro = 0.5
     litter = 1                                     # Edit this value?
     species = 'Rabbit'
@@ -213,6 +215,7 @@ class Rabbit(Animal):
 #########################################################################################################
 class Fox(Animal):
 
+    lifeSpan = 168 # 14 years
     probRepro = 0.3
     litter = 1                                         # Edit this value?
     species = 'Fox'
