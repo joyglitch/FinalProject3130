@@ -134,13 +134,13 @@ class Animal:
             #choose xdist
             if((ax-tempx) < 0):
                 return 4
-            if((ax-tempx) > 0):
+            else:
                 return 0
         elif(ydist < xdist):
             #choose ydist
             if ((ay-tempy) < 0):
                 return 6
-            if ((ay-tempy) > 0):
+            else:
                 return 2
         else:
             if (((ax-tempx) < 0) and ((ay-tempy) < 0)):
