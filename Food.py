@@ -24,10 +24,13 @@ class Food:
 
 class Mushroom(Food):
 
-    probRepro = 0.05                                    # MANIPULATE THIS VALUE FOR EXPERIMENT
-    probDecomp = 0.05                                   # MANIPULATE THIS VALUE FOR EXPERIMENT
     litter = 1                                          # Edit this value?
     species = 'Mushroom'
+
+    def __init__(self, mapSize, location=None, probRepro=0.1, probDecomp=0.1):
+        super().__init__(mapSize, location)
+        self.probRepro = probRepro
+        self.probDecomp = probDecomp
 
     def asexualReproduction(self, foodArray):
         if ((np.random.rand() < self.probRepro)):
