@@ -81,7 +81,80 @@ class Animal:
                             if (a1Y == (a2Y + j)):
                                 nearby = True
         return nearby
+    
+    def hunt(self, foodArray):        
+        ax = self.location[0]
+        ay = self.location[1]
+        sense = self.sense
+        
+        goodX = []
+        inRange = []
+        
+        for i in range(0, len(foodArray)):
+            tempx = foodArray[i].location[0]
+            if(tempx < (ax+sense) and (tempx > ax-sense)):
+                goodX.append(i)
+                
+        if (len(goodX) == 0):
+            return None
+        
+        for i in range(0, len(goodX)):
+            tempy = foodArray[goodX[i]].location[1]
+            if((tempy < (ay+sense)) and (tempy > (ay-sense))):
+                inRange.append(goodX[i])
+                
+        if (len(inRange) == 0):
+            return None
+        
+        steps = sense + 1
+        closestFood = []
+        
+        for i in range(0, len(inRange)):
+            
+            tempx = foodArray[inRange[i]].location[0]
+            tempy = foodArray[inRange[i]].location[1]
+            
+            if(abs(ax-tempx) > abs(ay-tempy)):
+                if(steps > abs(ax-tempx)):
+                    steps = abs(ax-tempx)
+                    closestFood = foodArray[inRange[i]].location
+            else:
+                if(steps > abs(ax-tempx)):
+                    steps = abs(ay-tempy)
+                    closestFood = foodArray[inRange[i]].location
+        
+        # pick the direction to move towards the food            
+        tempx = closestFood[0]
+        tempy = closestFood[1]
 
+        xdist = abs(ax-tempx)
+        ydist = abs(ay-tempy)
+
+        if(xdist < ydist):
+            #choose xdist
+            if((ax-tempx) < 0):
+                return 4
+            if((ax-tempx) > 0):
+                return 0
+        elif(ydist < xdist):
+            #choose ydist
+            if ((ay-tempy) < 0):
+                return 6
+            if ((ay-tempy) > 0):
+                return 2
+        else:
+            if (((ax-tempx) < 0) and ((ay-tempy) < 0)):
+                return 3
+            if (((ax-tempx) < 0) and ((ay-tempy) > 0)):
+                return 5
+            if (((ax-tempx) > 0) and ((ay-tempy) < 0)):
+                return 1
+            if (((ax-tempx) > 0) and ((ay-tempy) > 0)):
+                return 7
+
+#########################################################################################################
+# Rabbit class used in ecosystem -----------------------------------------------------------------------#
+#########################################################################################################
 class Rabbit(Animal):
 
     probRepro = 0.5
@@ -134,77 +207,6 @@ class Rabbit(Animal):
             rabbit.mated = True
             return True
         return False
-
-    def hunt(self, foodArray):
-        
-        ax = self.location[0]
-        ay = self.location[1]
-        sense = self.sense
-        
-        goodX = []
-        inRange = []
-        directions = []
-        
-        for i in range(0, len(foodArray)):
-            tempx = foodArray[i].location[0]
-            if(tempx < (ax+sense) and (tempx > ax-sense)):
-                goodX.append(i)
-                
-        if (len(goodX) == 0):
-            return None
-        
-        for i in range(0, len(goodX)):
-            tempy = foodArray[goodX[i]].location[1]
-            if((tempy < (ay+sense)) and (tempy > (ay-sense))):
-                inRange.append(goodX[i])
-                
-        if (len(inRange) == 0):
-            return None
-        
-        steps = 100
-        
-        for i in range(0, len(inRange)):
-            
-            tempx = foodArray[inRange[i]].location[0]
-            tempy = foodArray[inRange[i]].location[1]
-            
-            if(abs(ax-tempx) > abs(ay-tempy)):
-                if(steps > abs(ax-tempx)):
-                    steps = abs(ax-tempx)
-            else:
-                if(steps > abs(ax-tempx)):
-                    steps = abs(ay-tempy)
-        
-        for i in range(0, len(inRange)):
-            
-            tempx = foodArray[inRange[i]].location[0]
-            tempy = foodArray[inRange[i]].location[1]
-            
-            xdist = abs(ax-tempx)
-            ydist = abs(ay-tempy)
-            
-            if(xdist == steps or ydist == steps):    #only the closest ones
-                if(xdist < ydist):
-                    #choose xdist
-                    if((ax-tempx) < 0):
-                        return 4
-                    if((ax-tempx) > 0):
-                        return 0
-                elif(ydist < xdist):
-                    #choose ydist
-                    if ((ay-tempy) < 0):
-                        return 6
-                    if ((ay-tempy) > 0):
-                        return 2
-                else:
-                    if (((ax-tempx) < 0) and ((ay-tempy) < 0)):
-                        return 3
-                    if (((ax-tempx) < 0) and ((ay-tempy) > 0)):
-                        return 5
-                    if (((ax-tempx) > 0) and ((ay-tempy) < 0)):
-                        return 1
-                    if (((ax-tempx) > 0) and ((ay-tempy) > 0)):
-                        return 7
     
 #########################################################################################################
 # Fox class used in ecosystem --------------------------------------------------------------------------#
@@ -279,74 +281,3 @@ class Fox(Animal):
             fox.matedLast = fox.steps
             return True
         return False
-    
-    def hunt(self, foodArray):
-        
-        ax = self.location[0]
-        ay = self.location[1]
-        sense = self.sense
-        
-        goodX = []
-        inRange = []
-        directions = []
-        
-        for i in range(0, len(foodArray)):
-            tempx = foodArray[i].location[0]
-            if(tempx < (ax+sense) and (tempx > ax-sense)):
-                goodX.append(i)
-                
-        if (len(goodX) == 0):
-            return None
-        
-        for i in range(0, len(goodX)):
-            tempy = foodArray[goodX[i]].location[1]
-            if((tempy < (ay+sense)) and (tempy > (ay-sense))):
-                inRange.append(goodX[i])
-                
-        if (len(inRange) == 0):
-            return None
-        
-        steps = 100
-        
-        for i in range(0, len(inRange)):
-            
-            tempx = foodArray[inRange[i]].location[0]
-            tempy = foodArray[inRange[i]].location[1]
-            
-            if(abs(ax-tempx) > abs(ay-tempy)):
-                if(steps > abs(ax-tempx)):
-                    steps = abs(ax-tempx)
-            else:
-                if(steps > abs(ax-tempx)):
-                    steps = abs(ay-tempy)
-        
-        for i in range(0, len(inRange)):
-            
-            tempx = foodArray[inRange[i]].location[0]
-            tempy = foodArray[inRange[i]].location[1]
-            
-            xdist = abs(ax-tempx)
-            ydist = abs(ay-tempy)
-            
-            if(xdist == steps or ydist == steps):    #only the closest ones
-                if(xdist < ydist):
-                    #choose xdist
-                    if((ax-tempx) < 0):
-                        return 4
-                    if((ax-tempx) > 0):
-                        return 0
-                elif(ydist < xdist):
-                    #choose ydist
-                    if ((ay-tempy) < 0):
-                        return 6
-                    if ((ay-tempy) > 0):
-                        return 2
-                else:
-                    if (((ax-tempx) < 0) and ((ay-tempy) < 0)):
-                        return 3
-                    if (((ax-tempx) < 0) and ((ay-tempy) > 0)):
-                        return 5
-                    if (((ax-tempx) > 0) and ((ay-tempy) < 0)):
-                        return 1
-                    if (((ax-tempx) > 0) and ((ay-tempy) > 0)):
-                        return 7
