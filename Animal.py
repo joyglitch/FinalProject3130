@@ -10,7 +10,7 @@ class Animal:
     # requried variables: needed for subclasses
     location = [0,0]
     probRepro = 0
-    sense = 1
+    sense = 3
     lifeSpan = 100
     beStill = False
     mated = False
@@ -29,27 +29,28 @@ class Animal:
         self.alive = True
         self.maxHunger = maxHunger
 
-    def step(self):
+    def step(self, direct = None):
         self.hunger = self.hunger + 1
         self.steps = self.steps + 1
         #move once for every stepSize
+        
         for i in range(0, self.stepSize):
-
             #one for each direction
-            direct = np.random.randint(0,8)
-
+            if(direct == None):
+                direct = np.random.randint(0,8)
+            
             # if the direction is 1,0,7 move x by +1
             if ((direct==0) or (direct==1) or (direct==7)):
                 self.location[0] = self.location[0] + 1
-
+                
             # if the direction is 1,2,3 move y by +1
             if ((direct==1) or (direct==2) or (direct==3)):
                 self.location[1] = self.location[1] + 1
-
+                
             # if the direction is 3,4,5 move x by -1
             if ((direct==3) or (direct==4) or (direct==5)):
                 self.location[0] = self.location[0] - 1
-
+                
             # if the direction is 5,6,7 move y by -1
             if ((direct==5) or (direct==6) or (direct==7)):
                 self.location[1] = self.location[1] - 1
@@ -65,12 +66,12 @@ class Animal:
                 self.location[i] = self.mapSize - abs(self.location[i])
 
     def vicinityCheck(self, animal2):
-
         a1X = self.location[0]
         a1Y = self.location[1]
         a2X = animal2.location[0]
         a2Y = animal2.location[1]
-        sense = self.sense
+        
+        sense = 1
         nearby = False
 
         for i in range(-sense, (sense+1)):
@@ -81,7 +82,80 @@ class Animal:
                             if (a1Y == (a2Y + j)):
                                 nearby = True
         return nearby
+    
+    def hunt(self, foodArray):        
+        ax = self.location[0]
+        ay = self.location[1]
+        sense = self.sense
+        
+        goodX = []
+        inRange = []
+        
+        for i in range(0, len(foodArray)):
+            tempx = foodArray[i].location[0]
+            if(tempx < (ax+sense) and (tempx > ax-sense)):
+                goodX.append(i)
+                
+        if (len(goodX) == 0):
+            return None
+        
+        for i in range(0, len(goodX)):
+            tempy = foodArray[goodX[i]].location[1]
+            if((tempy < (ay+sense)) and (tempy > (ay-sense))):
+                inRange.append(goodX[i])
+                
+        if (len(inRange) == 0):
+            return None
+        
+        steps = sense + 1
+        closestFood = []
+        
+        for i in range(0, len(inRange)):
+            
+            tempx = foodArray[inRange[i]].location[0]
+            tempy = foodArray[inRange[i]].location[1]
+            
+            if(abs(ax-tempx) > abs(ay-tempy)):
+                if(steps > abs(ax-tempx)):
+                    steps = abs(ax-tempx)
+                    closestFood = foodArray[inRange[i]].location
+            else:
+                if(steps > abs(ax-tempx)):
+                    steps = abs(ay-tempy)
+                    closestFood = foodArray[inRange[i]].location
+        
+        # pick the direction to move towards the food            
+        tempx = closestFood[0]
+        tempy = closestFood[1]
 
+        xdist = abs(ax-tempx)
+        ydist = abs(ay-tempy)
+
+        if(xdist < ydist):
+            #choose xdist
+            if((ax-tempx) < 0):
+                return 4
+            else:
+                return 0
+        elif(ydist < xdist):
+            #choose ydist
+            if ((ay-tempy) < 0):
+                return 6
+            else:
+                return 2
+        else:
+            if (((ax-tempx) < 0) and ((ay-tempy) < 0)):
+                return 3
+            if (((ax-tempx) < 0) and ((ay-tempy) > 0)):
+                return 5
+            if (((ax-tempx) > 0) and ((ay-tempy) < 0)):
+                return 1
+            if (((ax-tempx) > 0) and ((ay-tempy) > 0)):
+                return 7
+
+#########################################################################################################
+# Rabbit class used in ecosystem -----------------------------------------------------------------------#
+#########################################################################################################
 class Rabbit(Animal):
 
     lifeSpan = 84 # 7 years
@@ -90,9 +164,12 @@ class Rabbit(Animal):
     species = 'Rabbit'
     eatMush = False
 
-    def step(self):
+    def step(self, foodArray = None):
         self.mated = False
-        super().step()
+        if(foodArray != None):
+            super().step(self.hunt(foodArray))
+        else:
+            super().step()
 
     def reproduced(self, rabbit2):
         self.hunger = self.hunger * 1.25           # Edit this value?
@@ -132,7 +209,10 @@ class Rabbit(Animal):
             rabbit.mated = True
             return True
         return False
-
+    
+#########################################################################################################
+# Fox class used in ecosystem --------------------------------------------------------------------------#
+#########################################################################################################
 class Fox(Animal):
 
     lifeSpan = 168 # 14 years
@@ -141,12 +221,15 @@ class Fox(Animal):
     species = 'Fox'
     matedLast = 0
 
-    def step(self):
+    def step(self, foodArray = None):
         if self.mated == True:
             # 12 steps need to have occurred before mating again
             if self.steps - self.matedLast == 12:
-                self.mated = False
-        super().step()
+                self.mated = False 
+        if(foodArray != None):
+            super().step(self.hunt(foodArray))
+        else:
+            super().step()
 
     def reproduced(self, fox):
         self.hunger = self.hunger * 1.25               # Edit this value?

@@ -92,9 +92,9 @@ class Ecosystem:
     def step(self):
         for i in range(max(len(self.foxes_array), len(self.rabbits_array))):
             if i < len(self.foxes_array):
-                self.foxes_array[i].step()
+                self.foxes_array[i].step((self.rabbits_array))
             if i < len(self.rabbits_array):
-                self.rabbits_array[i].step()
+                self.rabbits_array[i].step((self.mush_array))
 
     def mapToGrid(self):
         self.grid = np.zeros((self.mapSize, self.mapSize), dtype=int)
