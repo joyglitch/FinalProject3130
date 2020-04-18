@@ -32,7 +32,7 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
 """
 
 class Ecosystem:
-    def __init__(self, rows, omni=False, decomp=False):
+    def __init__(self, rows, omni=False, decomp=False, hunting=False):
         self.mapSize = rows
         self.grid = np.zeros((rows, rows), dtype=int)
         self.foxes_array = []
@@ -47,6 +47,7 @@ class Ecosystem:
         # ecosystem parameters
         self.omni = omni
         self.decomp = decomp
+        self.hunting = hunting
 
     def saveInitState(self):
         currRabbits = len(self.rabbits_array)
@@ -90,11 +91,18 @@ class Ecosystem:
             self.mush_array.append(mush)
 
     def step(self):
-        for i in range(max(len(self.foxes_array), len(self.rabbits_array))):
-            if i < len(self.foxes_array):
-                self.foxes_array[i].step((self.rabbits_array))
-            if i < len(self.rabbits_array):
-                self.rabbits_array[i].step((self.mush_array))
+        if self.hunting:
+            for i in range(max(len(self.foxes_array), len(self.rabbits_array))):
+                if i < len(self.foxes_array):
+                    self.foxes_array[i].step(self.rabbits_array)
+                if i < len(self.rabbits_array):
+                    self.rabbits_array[i].step(self.mush_array)
+        else:
+            for i in range(max(len(self.foxes_array), len(self.rabbits_array))):
+                if i < len(self.foxes_array):
+                    self.foxes_array[i].step()
+                if i < len(self.rabbits_array):
+                    self.rabbits_array[i].step()
 
     def mapToGrid(self):
         self.grid = np.zeros((self.mapSize, self.mapSize), dtype=int)
