@@ -65,11 +65,11 @@ class Animal:
                 self.location[i] = self.mapSize - abs(self.location[i])
 
     def vicinityCheck(self, animal2):
-
         a1X = self.location[0]
         a1Y = self.location[1]
         a2X = animal2.location[0]
         a2Y = animal2.location[1]
+        
         sense = 1
         nearby = False
 
@@ -211,7 +211,6 @@ class Rabbit(Animal):
 #########################################################################################################
 # Fox class used in ecosystem --------------------------------------------------------------------------#
 #########################################################################################################
-
 class Fox(Animal):
 
     probRepro = 0.3
