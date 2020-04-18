@@ -32,7 +32,7 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
 """
 
 class Ecosystem:
-    def __init__(self, rows, omni=None):
+    def __init__(self, rows, omni=False, decomp=False):
         self.mapSize = rows
         self.grid = np.zeros((rows, rows), dtype=int)
         self.foxes_array = []
@@ -43,36 +43,57 @@ class Ecosystem:
         self.numMushrooms = []
         self.foxesDead = False
         self.rabbitsDead = False
+        # ecosystem parameters
+        self.omni = omni
+        self.decomp = decomp
 
-        if omni != None:
-            self.omni = omni
-        else :
-            self.omni = False
+    def saveInitState(self):
+        currRabbits = len(self.rabbits_array)
+        currFoxes = len(self.foxes_array)
+        currMush = len(self.mush_array)
+        # will hold the locations of the animals / mushrooms
+        foxLocs = []
+        rabbitLocs = []
+        mushLocs = []
+
+        for i in range(max(currRabbits, currFoxes, currMush)):
+            if i < currFoxes:
+                foxLocs.append(self.foxes_array[i].location)
+            if i < currRabbits:
+                rabbitLocs.append(self.rabbits_array[i].location)
+            if i < currMush:
+                mushLocs.append(self.mush_array[i].location)
+
+        return {"foxes": foxLocs, "rabbits": rabbitLocs, "mushrooms": mushLocs}
 
     # start the simulation with adults
-    def createFoxes(self, numFoxes, fox_step_size, maxHunger=10, age=10):
+    def createFoxes(self, numFoxes, stepSize, maxHunger=10, age=10, locations=None):
         self.numFoxes.append(numFoxes)
         for i in range(numFoxes):
-            fox = Fox(mapSize=self.mapSize, stepSize=fox_step_size, maxHunger=maxHunger, age=age)
+            loc = locations[i] if locations != None else None
+            fox = Fox(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
             self.foxes_array.append(fox)
 
-    def createRabbits(self, numRabbits, rabbit_step_size, maxHunger=10, age=8):
+    def createRabbits(self, numRabbits, stepSize, maxHunger=10, age=8, locations=None):
         self.numRabbits.append(numRabbits)
         for i in range(numRabbits):
-            rabbit = Rabbit(mapSize=self.mapSize, stepSize=rabbit_step_size, maxHunger=maxHunger, age=age)
+            loc = locations[i] if locations != None else None
+            rabbit = Rabbit(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
             self.rabbits_array.append(rabbit)
 
-    def createMushrooms(self, numMushrooms):
+    def createMushrooms(self, numMushrooms, locations=None):
         self.numMushrooms.append(numMushrooms)
         for i in range(numMushrooms):
-            mush = Mushroom(mapSize=self.mapSize)
+            loc = locations[i] if locations != None else None
+            mush = Mushroom(mapSize=self.mapSize, location=loc)
             self.mush_array.append(mush)
 
     def step(self):
-        for i in range(len(self.foxes_array)):
-            self.foxes_array[i].step((self.rabbits_array))
-        for i in range(len(self.rabbits_array)):
-            self.rabbits_array[i].step((self.mush_array))
+        for i in range(max(len(self.foxes_array), len(self.rabbits_array))):
+            if i < len(self.foxes_array):
+                self.foxes_array[i].step((self.rabbits_array))
+            if i < len(self.rabbits_array):
+                self.rabbits_array[i].step((self.mush_array))
 
     def mapToGrid(self):
         self.grid = np.zeros((self.mapSize, self.mapSize), dtype=int)
@@ -186,23 +207,9 @@ class Ecosystem:
         self.foxesDead = self.hungerCheck(self.foxes_array)
         self.rabbitsDead = self.hungerCheck(self.rabbits_array)
 
-        # mushrooms decompose dead animals that die from starvation
-        starved_foxes = [fox for fox in self.foxes_array if fox.beStill]
-        starved_rabbits = [rabbit for rabbit in self.rabbits_array if rabbit.beStill]
-
-        for i in range(max(len(starved_foxes), len(starved_rabbits))):
-            # there are starved foxes
-            if i < len(starved_foxes):
-                x = starved_foxes[i].location[0]
-                y = starved_foxes[i].location[1]
-                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
-                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
-            #there are starved rabbits
-            if i < len(starved_rabbits):
-                x = starved_rabbits[i].location[0]
-                y = starved_rabbits[i].location[1]
-                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
-                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
+        if self.decomp:
+            # mushrooms decompose dead animals that die from starvation
+            self.decomposeTheDead()
 
         # remove dead animals
         self.foxes_array = [ fox for fox in self.foxes_array if not fox.beStill]
@@ -215,23 +222,38 @@ class Ecosystem:
         self.mush_array = [ mush for mush in self.mush_array if not mush.eaten]
 
     def hungerCheck(self, animalArray):
-
         everyoneDead = True
         if len(animalArray) == 0:
             return everyoneDead
 
         maxHunger = animalArray[0].maxHunger
-
         for i in range(0, len(animalArray)):
-
             hunger = animalArray[i].hunger
-
             if hunger > maxHunger:
                 animalArray[i].beStill = True
             else:
                 everyoneDead = False
 
         return everyoneDead
+
+    def decomposeTheDead(self):
+        # mushrooms decompose dead animals that die from starvation
+        starved_foxes = [fox for fox in self.foxes_array if fox.beStill]
+        starved_rabbits = [rabbit for rabbit in self.rabbits_array if rabbit.beStill]
+
+        for i in range(max(len(starved_foxes), len(starved_rabbits))):
+            # there are starved foxes
+            if i < len(starved_foxes):
+                x = starved_foxes[i].location[0]
+                y = starved_foxes[i].location[1]
+                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
+                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
+            # there are starved rabbits
+            if i < len(starved_rabbits):
+                x = starved_rabbits[i].location[0]
+                y = starved_rabbits[i].location[1]
+                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
+                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
 
     def plotPopulationHist(self):
         x = range(len(self.numFoxes))
