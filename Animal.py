@@ -33,24 +33,24 @@ class Animal:
         self.hunger = self.hunger + 1
         self.steps = self.steps + 1
         #move once for every stepSize
-        
+
         for i in range(0, self.stepSize):
             #one for each direction
             if(direct == None):
                 direct = np.random.randint(0,8)
-            
+
             # if the direction is 1,0,7 move x by +1
             if ((direct==0) or (direct==1) or (direct==7)):
                 self.location[0] = self.location[0] + 1
-                
+
             # if the direction is 1,2,3 move y by +1
             if ((direct==1) or (direct==2) or (direct==3)):
                 self.location[1] = self.location[1] + 1
-                
+
             # if the direction is 3,4,5 move x by -1
             if ((direct==3) or (direct==4) or (direct==5)):
                 self.location[0] = self.location[0] - 1
-                
+
             # if the direction is 5,6,7 move y by -1
             if ((direct==5) or (direct==6) or (direct==7)):
                 self.location[1] = self.location[1] - 1
@@ -70,7 +70,7 @@ class Animal:
         a1Y = self.location[1]
         a2X = animal2.location[0]
         a2Y = animal2.location[1]
-        
+
         sense = 1
         nearby = False
 
@@ -82,39 +82,39 @@ class Animal:
                             if (a1Y == (a2Y + j)):
                                 nearby = True
         return nearby
-    
-    def hunt(self, foodArray):        
+
+    def hunt(self, foodArray):
         ax = self.location[0]
         ay = self.location[1]
         sense = self.sense
-        
+
         goodX = []
         inRange = []
-        
+
         for i in range(0, len(foodArray)):
             tempx = foodArray[i].location[0]
             if(tempx < (ax+sense) and (tempx > ax-sense)):
                 goodX.append(i)
-                
+
         if (len(goodX) == 0):
             return None
-        
+
         for i in range(0, len(goodX)):
             tempy = foodArray[goodX[i]].location[1]
             if((tempy < (ay+sense)) and (tempy > (ay-sense))):
                 inRange.append(goodX[i])
-                
+
         if (len(inRange) == 0):
             return None
-        
+
         steps = sense + 1
         closestFood = []
-        
+
         for i in range(0, len(inRange)):
-            
+
             tempx = foodArray[inRange[i]].location[0]
             tempy = foodArray[inRange[i]].location[1]
-            
+
             if(abs(ax-tempx) > abs(ay-tempy)):
                 if(steps > abs(ax-tempx)):
                     steps = abs(ax-tempx)
@@ -123,8 +123,8 @@ class Animal:
                 if(steps > abs(ax-tempx)):
                     steps = abs(ay-tempy)
                     closestFood = foodArray[inRange[i]].location
-        
-        # pick the direction to move towards the food            
+
+        # pick the direction to move towards the food
         tempx = closestFood[0]
         tempy = closestFood[1]
 
@@ -160,7 +160,8 @@ class Rabbit(Animal):
 
     lifeSpan = 84 # 7 years
     probRepro = 0.5
-    litter = 1                                     # Edit this value?
+    avgLitter = 5
+    maxLitter = 14
     species = 'Rabbit'
     eatMush = False
 
@@ -175,17 +176,33 @@ class Rabbit(Animal):
         self.hunger = self.hunger * 1.25           # Edit this value?
         rabbit2.hunger = rabbit2.hunger * 1.25     # Edit this value?
 
-    def interactRabbit(self, rabbit, animalArray):
+    def interactRabbit(self, rabbit, animalArray, probLitter=False):
         together = False
+        mated = False
         if not rabbit.beStill:
             together = self.vicinityCheck(rabbit)
         if together:
             if self.mated == False and rabbit.mated == False:
-                if ((np.random.rand() < self.probRepro)):
-                    for i in range(0, self.litter):
-                        self.reproduce(animalArray, rabbit)
-                    self.reproduced(rabbit)
-                    return True
+                if not probLitter:
+                    if np.random.rand() < self.probRepro:
+                        for i in range(0, self.avgLitter):
+                            baby = self.reproduce(animalArray, rabbit)
+                            if baby == False:
+                                break
+                            self.reproduced(rabbit)
+                            mated = True
+                else:
+                    reproOdds = self.probRepro
+                    for i in range(0, self.maxLitter):
+                        baby = False
+                        if np.random.rand() < reproOdds:
+                            baby = self.reproduce(animalArray, rabbit)
+                            if baby == False:
+                                break # animals not of age so don't try again
+                            reproOdds = reproOdds - 0.05
+                            mated = True
+                            self.reproduced(rabbit)
+                return mated
         return False
 
     def interactMushroom(self, mushroom):
@@ -209,7 +226,7 @@ class Rabbit(Animal):
             rabbit.mated = True
             return True
         return False
-    
+
 #########################################################################################################
 # Fox class used in ecosystem --------------------------------------------------------------------------#
 #########################################################################################################
@@ -217,7 +234,8 @@ class Fox(Animal):
 
     lifeSpan = 168 # 14 years
     probRepro = 0.3
-    litter = 1                                         # Edit this value?
+    avgLitter = 4
+    maxLitter = 11
     species = 'Fox'
     matedLast = 0
 
@@ -225,7 +243,7 @@ class Fox(Animal):
         if self.mated == True:
             # 12 steps need to have occurred before mating again
             if self.steps - self.matedLast == 12:
-                self.mated = False 
+                self.mated = False
         if(foodArray != None):
             super().step(self.hunt(foodArray))
         else:
@@ -245,17 +263,33 @@ class Fox(Animal):
             return True
         return False
 
-    def interactFox(self, fox, animalArray):
+    def interactFox(self, fox, animalArray, probLitter=False):
         together = False
+        mated = False
         if not fox.beStill:
             together = self.vicinityCheck(fox)
         if together:
             if self.mated == False and fox.mated == False:
-                if ((np.random.rand() < self.probRepro)):
-                    for i in range(0, self.litter):
-                        self.reproduce(animalArray, fox)
-                    self.reproduced(fox)
-                    return True
+                if not probLitter:
+                    if np.random.rand() < self.probRepro:
+                        for i in range(0, self.avgLitter):
+                            baby = self.reproduce(animalArray, fox)
+                            if baby == False:
+                                break
+                            self.reproduced(fox)
+                            mated = True
+                else:
+                    reproOdds = self.probRepro
+                    for i in range(0, self.maxLitter):
+                        baby = False
+                        if np.random.rand() < reproOdds:
+                            baby = self.reproduce(animalArray, fox)
+                            if baby == False:
+                                break # animals not of age so don't try again
+                            reproOdds = reproOdds - 0.05
+                            mated = True
+                            self.reproduced(fox)
+                return mated
         return False
 
     #add interact mushroom to allow for omnivourism

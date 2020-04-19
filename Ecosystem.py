@@ -32,7 +32,7 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
 """
 
 class Ecosystem:
-    def __init__(self, rows, omni=False, decomp=False):
+    def __init__(self, rows, omni=False, decomp=False, probLitter=False):
         self.mapSize = rows
         self.grid = np.zeros((rows, rows), dtype=int)
         self.foxes_array = []
@@ -47,6 +47,7 @@ class Ecosystem:
         # ecosystem parameters
         self.omni = omni
         self.decomp = decomp
+        self.probLitter = probLitter
 
     def saveInitState(self):
         currRabbits = len(self.rabbits_array)
@@ -175,7 +176,7 @@ class Ecosystem:
                     eatRabbit = False
                     if j != i and j < currFoxes:
                         # does the fox reproduce
-                        fox.interactFox(self.foxes_array[j], self.foxes_array)
+                        fox.interactFox(self.foxes_array[j], self.foxes_array, self.probLitter)
                     if j < currRabbits:
                         # does the fox eat a rabbit
                         eatRabbit = fox.interactRabbit(self.rabbits_array[j])
@@ -192,7 +193,7 @@ class Ecosystem:
                 for j in range(max(currRabbits, currMush)):
                     if j != i and j < currRabbits:
                         # does the rabbit reproduce
-                        rabbit.interactRabbit(self.rabbits_array[j], self.rabbits_array)
+                        rabbit.interactRabbit(self.rabbits_array[j], self.rabbits_array, self.probLitter)
                     if j < currMush:
                         # does the rabbit eat a mushroom
                         rabbit.interactMushroom(self.mush_array[j])
