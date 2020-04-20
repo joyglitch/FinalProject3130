@@ -4,6 +4,8 @@ import sys
 
 import numpy as np
 import random
+import os, shutil
+import datetime, time, fnmatch
 import math
 
 import matplotlib.pyplot as plt
@@ -33,7 +35,7 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
 """
 
 class Ecosystem:
-    def __init__(self, rows, omni=False, decomp=False, hunting=False):
+    def __init__(self, rows, omni=False, decomp=False, hunting=False, probLitter=False):
         self.mapSize = rows
         self.maxShrooms = rows*rows
         self.grid = np.zeros((rows, rows), dtype=int)
@@ -51,6 +53,7 @@ class Ecosystem:
         self.omni = omni
         self.decomp = decomp
         self.hunting = hunting
+        self.probLitter = probLitter
 
     def saveInitState(self):
         currRabbits = len(self.rabbits_array)
@@ -72,18 +75,18 @@ class Ecosystem:
         return {"foxes": foxLocs, "rabbits": rabbitLocs, "mushrooms": mushLocs}
 
     # start the simulation with adults
-    def createFoxes(self, numFoxes, stepSize, maxHunger=10, age=10, locations=None):
+    def createFoxes(self, numFoxes, maxHunger=10, age=10, locations=None):
         self.numFoxes.append(numFoxes)
         for i in range(numFoxes):
             loc = locations[i] if locations != None else None
-            fox = Fox(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
+            fox = Fox(mapSize=self.mapSize, location=loc, maxHunger=maxHunger, age=age)
             self.foxes_array.append(fox)
 
-    def createRabbits(self, numRabbits, stepSize, maxHunger=10, age=8, locations=None):
+    def createRabbits(self, numRabbits, maxHunger=10, age=8, locations=None):
         self.numRabbits.append(numRabbits)
         for i in range(numRabbits):
             loc = locations[i] if locations != None else None
-            rabbit = Rabbit(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
+            rabbit = Rabbit(mapSize=self.mapSize, location=loc, maxHunger=maxHunger, age=age)
             self.rabbits_array.append(rabbit)
 
     def createMushrooms(self, numMushrooms, locations=None):
@@ -200,7 +203,7 @@ class Ecosystem:
                     eatRabbit = False
                     if j != i and j < currFoxes:
                         # does the fox reproduce
-                        fox.interactFox(self.foxes_array[j], self.foxes_array)
+                        fox.interactOwnSpecies(self.foxes_array[j], self.foxes_array, self.probLitter)
                     if j < currRabbits:
                         # does the fox eat a rabbit
                         eatRabbit = fox.interactRabbit(self.rabbits_array[j])
@@ -218,7 +221,7 @@ class Ecosystem:
                 for j in range(max(currRabbits, currMush)):
                     if j != i and j < currRabbits:
                         # does the rabbit reproduce
-                        rabbit.interactRabbit(self.rabbits_array[j], self.rabbits_array)
+                        rabbit.interactOwnSpecies(self.rabbits_array[j], self.rabbits_array, self.probLitter)
                     if j < currMush:
                         # does the rabbit eat a mushroom
                         rabbit.interactMushroom(self.mush_array[j])
@@ -279,7 +282,7 @@ class Ecosystem:
                 decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
                 decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
 
-    def plotPopulationHist(self):
+    def plotPopulationHist(self, name, dirName):
         x = range(len(self.numFoxes))
 
         plt.plot(x, self.numFoxes, label='Foxes', color='r')
@@ -289,3 +292,9 @@ class Ecosystem:
         yl = plt.ylabel("Population")
         t = plt.title("Population Growth")
         legend = plt.legend()
+        # save the plot
+        t = time.localtime()
+        timestamp = time.strftime('%b-%d-%Y-%H%M%S', t)
+        fileName = (name + "-" + timestamp + '.pdf')
+        plt.savefig(fileName)
+        shutil.move(fileName,dirName)
