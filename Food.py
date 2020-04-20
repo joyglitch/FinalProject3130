@@ -32,9 +32,14 @@ class Mushroom(Food):
         self.probRepro = probRepro
         self.probDecomp = probDecomp
 
-    def asexualReproduction(self, foodArray):
+    def asexualReproduction(self, foodArray,occupiedSpaces):
         if ((np.random.rand() < self.probRepro)):
             for i in range(0, self.litter):
+                mush = Mushroom(self.mapSize)
+                while occupiedSpaces[mush.location[0]][mush.location[1]] == 1:
+                    mush = Mushroom(self.mapSize)
+                occupiedSpaces[mush.location[0]][mush.location[1]] = 1
+                
                 foodArray.append(Mushroom(self.mapSize))
 
     def decomposerSpawn(self, foodArray):

@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 import random
+import math
 
 import matplotlib.pyplot as plt
 from matplotlib import colors
@@ -34,7 +35,9 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
 class Ecosystem:
     def __init__(self, rows, omni=False, decomp=False, hunting=False):
         self.mapSize = rows
+        self.maxShrooms = rows*rows
         self.grid = np.zeros((rows, rows), dtype=int)
+        self.occupied = np.zeros((rows, rows), dtype=int)
         self.foxes_array = []
         self.rabbits_array = []
         self.mush_array = []
@@ -84,20 +87,25 @@ class Ecosystem:
             self.rabbits_array.append(rabbit)
 
     def createMushrooms(self, numMushrooms, locations=None):
+        while numMushrooms > self.maxShrooms:
+            try:
+                numMushrooms = (self.maxShrooms) - math.floor(self.maxShrooms*0.1)
+                print("Not enough space for all those mushrooms, mushrooms reduced to max - 10%")
+                print(numMushrooms)
+                break
+            except ValueError:
+                print("Too Many Mushshrooms for that grid, lower amount and Try again...")
+                
         self.numMushrooms.append(numMushrooms)
         for i in range(numMushrooms):
             loc = locations[i] if locations != None else None
             mush = Mushroom(mapSize=self.mapSize, location=loc)
+            
+            #check if space is already filled by mush, if yes find a free space
+            while self.occupied[mush.location[0]][mush.location[1]] == 1:
+                mush = Mushroom(mapSize=self.mapSize, location=loc)
+            self.occupied[mush.location[0]][mush.location[1]] = 1
             self.mush_array.append(mush)
-            
-        #Remove duplicate mushrooms
-        uniqueMush = np.unique(self.mush_array)
-        while len(uniqueMush) < numMushrooms:
-            mush = Mushroom(mapSize=self.mapSize, location=None)
-            self.mush_array.append(mush) 
-            uniqueMush = np.unique(self.mush_array)           
-        mush_array = uniqueMush
-            
 
     def step(self):
         if self.hunting:
@@ -160,10 +168,6 @@ class Ecosystem:
             # check interactions
             self.checkInteractions()
             self.removeTheDead()
-            
-            #remove duplicate mushrooms
-            uniqueMush = np.unique(self.mush_array)
-            self.mush_array = uniqueMush
 
             # check population sizes
             self.numFoxes.append(len(self.foxes_array))
@@ -205,6 +209,7 @@ class Ecosystem:
                         if self.omni == True:
                             if not eatRabbit:
                                 fox.interactMushroom(self.mush_array[j])
+                                self.occupied[self.mush_array[j].location[0]][self.mush_array[j].location[1]] = 0
 
             # there are still rabbits
             if i < currRabbits:
@@ -217,21 +222,13 @@ class Ecosystem:
                     if j < currMush:
                         # does the rabbit eat a mushroom
                         rabbit.interactMushroom(self.mush_array[j])
+                        self.occupied[self.mush_array[j].location[0]][self.mush_array[j].location[1]] = 0
 
             # there are still mushrooms
             if i < currMush:
                 mushroom = self.mush_array[i]
                 # mushrooms perform asexual reproduction
-                mushroom.asexualReproduction(self.mush_array)
-                
-                #remove and add a new mushroom if duplicate created
-                uniqueMush = np.unique(self.mush_array)
-                while len(uniqueMush) < len(self.mush_array)
-                    mushroom = self.mush_array[i]
-                    # mushrooms perform asexual reproduction
-                    mushroom.asexualReproduction(self.mush_array)
-                    uniqueMush = np.unique(self.mush_array)
-                self.mush_array = uniqueMush
+                mushroom.asexualReproduction(self.mush_array,self.occupied)
 
     def removeTheDead(self):
         self.naturalDeaths = []
@@ -278,8 +275,9 @@ class Ecosystem:
         for deadAnimal in self.naturalDeaths:
             x = deadAnimal.location[0]
             y = deadAnimal.location[1]
-            decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
-            decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
+            if self.occupied[x][y] == 0:
+                decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
+                decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
 
     def plotPopulationHist(self):
         x = range(len(self.numFoxes))
