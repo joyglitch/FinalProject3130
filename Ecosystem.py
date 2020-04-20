@@ -4,6 +4,8 @@ import sys
 
 import numpy as np
 import random
+import os, shutil
+import datetime, time, fnmatch
 
 import matplotlib.pyplot as plt
 from matplotlib import colors
@@ -260,7 +262,7 @@ class Ecosystem:
             decompMush = Mushroom(mapSize=self.mapSize, location=[x,y])
             decompMush.decomposerSpawn(self.mush_array) # probability check for decomposer to spawn
 
-    def plotPopulationHist(self):
+    def plotPopulationHist(self, name, dirName):
         x = range(len(self.numFoxes))
 
         plt.plot(x, self.numFoxes, label='Foxes', color='r')
@@ -270,3 +272,9 @@ class Ecosystem:
         yl = plt.ylabel("Population")
         t = plt.title("Population Growth")
         legend = plt.legend()
+        # save the plot
+        t = time.localtime()
+        timestamp = time.strftime('%b-%d-%Y-%H%M%S', t)
+        fileName = (name + "-" + timestamp + '.pdf')
+        plt.savefig(fileName)
+        shutil.move(fileName,dirName)
