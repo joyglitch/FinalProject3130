@@ -194,7 +194,15 @@ class Rabbit(Animal):
             together = self.vicinityCheck(mushroom)
         if together:
             mushroom.eaten = True
-            self.hunger = self.hunger / 1.25       # Edit this value?
+            # Larger batch of mushrooms is more satisfying for hunger
+            if mushroom.size == 1:
+                self.hunger = self.hunger / 1.25       # Edit this value?
+            elif mushroom.size == 2:
+                self.hunger = self.hunger / 1.35       # Edit this value?
+            elif mushroom.size == 3:
+                self.hunger = self.hunger / 1.5       # Edit this value?
+            else:
+                self.hunger = self.hunger / 1.25      # unknown size value = to size 1
             return True
         return False
 
@@ -266,7 +274,15 @@ class Fox(Animal):
             together = self.vicinityCheck(mushroom)
         if together:
             mushroom.eaten = True
-            self.hunger = self.hunger / 1.25
+            # Larger batch of mushrooms is more satisfying for hunger, not as good as rabbits
+            if mushroom.size == 1:
+                self.hunger = self.hunger / 1.1       # Edit this value?
+            elif mushroom.size == 2:
+                self.hunger = self.hunger / 1.15       # Edit this value?
+            elif mushroom.size == 3:
+                self.hunger = self.hunger / 1.25       # Edit this value?
+            else:
+                self.hunger = self.hunger / 1.1      # unknown size value = to size 1
             return True
         return False
 

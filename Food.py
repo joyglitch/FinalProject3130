@@ -13,6 +13,7 @@ class Food:
     location = []
     eaten = False
     mapSize = 0
+    size = 1
 
     def __init__(self, mapSize, location = None):
 
@@ -21,6 +22,11 @@ class Food:
         self.location = location
 
         self.mapSize = mapSize
+
+        self.size = np.random.randint(1, 3)
+        #roll again if max size to make max size less likely
+        if self.size == 3:
+            self.size = np.random.randint(1, 3)
 
 class Mushroom(Food):
 
