@@ -89,6 +89,15 @@ class Ecosystem:
             loc = locations[i] if locations != None else None
             mush = Mushroom(mapSize=self.mapSize, location=loc)
             self.mush_array.append(mush)
+            
+        #Remove duplicate mushrooms
+        uniqueMush = np.unique(self.mush_array)
+        while len(uniqueMush) < numMushrooms:
+            mush = Mushroom(mapSize=self.mapSize, location=None)
+            self.mush_array.append(mush) 
+            uniqueMush = np.unique(self.mush_array)           
+        mush_array = uniqueMush
+            
 
     def step(self):
         if self.hunting:
@@ -151,6 +160,10 @@ class Ecosystem:
             # check interactions
             self.checkInteractions()
             self.removeTheDead()
+            
+            #remove duplicate mushrooms
+            uniqueMush = np.unique(self.mush_array)
+            self.mush_array = uniqueMush
 
             # check population sizes
             self.numFoxes.append(len(self.foxes_array))
@@ -210,6 +223,15 @@ class Ecosystem:
                 mushroom = self.mush_array[i]
                 # mushrooms perform asexual reproduction
                 mushroom.asexualReproduction(self.mush_array)
+                
+                #remove and add a new mushroom if duplicate created
+                uniqueMush = np.unique(self.mush_array)
+                while len(uniqueMush) < len(self.mush_array)
+                    mushroom = self.mush_array[i]
+                    # mushrooms perform asexual reproduction
+                    mushroom.asexualReproduction(self.mush_array)
+                    uniqueMush = np.unique(self.mush_array)
+                self.mush_array = uniqueMush
 
     def removeTheDead(self):
         self.naturalDeaths = []
