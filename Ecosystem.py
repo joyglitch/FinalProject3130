@@ -103,7 +103,7 @@ class Ecosystem:
             
             #check if space is already filled by mush, if yes find a free space
             while self.occupied[mush.location[0]][mush.location[1]] == 1:
-                mush = Mushroom(mapSize=self.mapSize, location=loc)
+                mush = Mushroom(mapSize=self.mapSize, location=None)
             self.occupied[mush.location[0]][mush.location[1]] = 1
             self.mush_array.append(mush)
 
