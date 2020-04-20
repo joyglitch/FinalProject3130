@@ -70,18 +70,18 @@ class Ecosystem:
         return {"foxes": foxLocs, "rabbits": rabbitLocs, "mushrooms": mushLocs}
 
     # start the simulation with adults
-    def createFoxes(self, numFoxes, stepSize, maxHunger=10, age=10, locations=None):
+    def createFoxes(self, numFoxes, maxHunger=10, age=10, locations=None):
         self.numFoxes.append(numFoxes)
         for i in range(numFoxes):
             loc = locations[i] if locations != None else None
-            fox = Fox(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
+            fox = Fox(mapSize=self.mapSize, location=loc, maxHunger=maxHunger, age=age)
             self.foxes_array.append(fox)
 
-    def createRabbits(self, numRabbits, stepSize, maxHunger=10, age=8, locations=None):
+    def createRabbits(self, numRabbits, maxHunger=10, age=8, locations=None):
         self.numRabbits.append(numRabbits)
         for i in range(numRabbits):
             loc = locations[i] if locations != None else None
-            rabbit = Rabbit(mapSize=self.mapSize, stepSize=stepSize, location=loc, maxHunger=maxHunger, age=age)
+            rabbit = Rabbit(mapSize=self.mapSize, location=loc, maxHunger=maxHunger, age=age)
             self.rabbits_array.append(rabbit)
 
     def createMushrooms(self, numMushrooms, locations=None):
@@ -184,7 +184,7 @@ class Ecosystem:
                     eatRabbit = False
                     if j != i and j < currFoxes:
                         # does the fox reproduce
-                        fox.interactFox(self.foxes_array[j], self.foxes_array, self.probLitter)
+                        fox.interactOwnSpecies(self.foxes_array[j], self.foxes_array, self.probLitter)
                     if j < currRabbits:
                         # does the fox eat a rabbit
                         eatRabbit = fox.interactRabbit(self.rabbits_array[j])
@@ -201,7 +201,7 @@ class Ecosystem:
                 for j in range(max(currRabbits, currMush)):
                     if j != i and j < currRabbits:
                         # does the rabbit reproduce
-                        rabbit.interactRabbit(self.rabbits_array[j], self.rabbits_array, self.probLitter)
+                        rabbit.interactOwnSpecies(self.rabbits_array[j], self.rabbits_array, self.probLitter)
                     if j < currMush:
                         # does the rabbit eat a mushroom
                         rabbit.interactMushroom(self.mush_array[j])
