@@ -292,6 +292,6 @@ class Ecosystem:
         t = plt.title("Population Growth")
         legend = plt.legend()
         # save the plot
-        fileName = (name + "-histogram.pdf")
+        fileName = (name + "-histogram.png")
         plt.savefig(fileName)
         shutil.move(fileName,dirName)
