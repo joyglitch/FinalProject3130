@@ -97,12 +97,12 @@ class Ecosystem:
                 break
             except ValueError:
                 print("Too Many Mushshrooms for that grid, lower amount and Try again...")
-                
+
         self.numMushrooms.append(numMushrooms)
         for i in range(numMushrooms):
             loc = locations[i] if locations != None else None
             mush = Mushroom(mapSize=self.mapSize, location=loc)
-            
+
             #check if space is already filled by mush, if yes find a free space
             while self.occupied[mush.location[0]][mush.location[1]] == 1:
                 mush = Mushroom(mapSize=self.mapSize, location=None)
@@ -291,6 +291,7 @@ class Ecosystem:
         yl = plt.ylabel("Population")
         t = plt.title("Population Growth")
         legend = plt.legend()
+        plt.grid(b=True, which='major', color='#ececec', linestyle='-')
         # save the plot
         fileName = (name + "-histogram.png")
         plt.savefig(fileName)
