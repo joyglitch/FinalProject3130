@@ -28,7 +28,6 @@ n = colors.Normalize(vmin=0,vmax=3)
 """
 For animation to work in the notebook, you might have to install
 ffmpeg.  On Ubuntu and Linux Mint, the following should work.
-
     sudo add-apt-repository ppa:mc3man/trusty-media
     sudo apt-get update
     sudo apt-get install ffmpeg
@@ -293,8 +292,6 @@ class Ecosystem:
         t = plt.title("Population Growth")
         legend = plt.legend()
         # save the plot
-        t = time.localtime()
-        timestamp = time.strftime('%b-%d-%Y-%H%M%S', t)
-        fileName = (name + "-" + timestamp + '.pdf')
+        fileName = (name + "-histogram.pdf")
         plt.savefig(fileName)
         shutil.move(fileName,dirName)
