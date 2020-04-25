@@ -95,7 +95,7 @@ class Animal:
         Parameters
         ----------
         direct : int, optional
-            direction to move the animal, (Default None)
+            direction to move the animal, acceptable range 0-8, (Default None)
         """
 
         self.hunger = self.hunger + 1
@@ -180,26 +180,36 @@ class Animal:
         probLitter : boolean, optional
             does animal reproduce probability litter size, (Default False)
         """
+
         together = False
         if not partner.beStill:
             together = self.vicinityCheck(partner)
         if together:
+            # check if the animals are able to mate
             if self.mated == False and partner.mated == False:
                 if not probLitter:
+                    # check if successful in mating
                     if np.random.rand() < self.probRepro:
+                        # reproduce the average litter size
                         for i in range(0, self.avgLitter):
+                            # have the baby
                             baby = self.reproduce(animalArray, partner)
                             if baby == False:
-                                break
+                                break # insufficient age or energy to reproduce
                             self.reproduced(partner)
                 else:
+                    # probability litter size
                     reproOdds = self.probRepro
+                    # try to have the max litter size
                     for i in range(0, self.maxLitter):
                         baby = False
+                        # check if successful in mating
                         if np.random.rand() < reproOdds:
+                            # have the baby
                             baby = self.reproduce(animalArray, partner)
                             if baby == False:
-                                break # animals not of age so don't try again
+                                break # insufficient age or energy to reproduce
+                            # successful reproduction, lower odds a little
                             reproOdds = reproOdds - 0.05
                             self.reproduced(partner)
 
@@ -230,6 +240,7 @@ class Animal:
             if self.hunger < self.maxHunger/2 and partner.hunger < partner.maxHunger/2:
                 animalArray.append(baby)
                 animalArray[-1].step() # baby moves a step away from parent
+                # set that they mated and when
                 self.mated = True
                 self.matedLast = self.steps
                 partner.mated = True
