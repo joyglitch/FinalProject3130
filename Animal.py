@@ -23,6 +23,8 @@ class Animal:
         life span of the animal
     beStill : boolean
         is the animal dead
+    ateFood : boolean
+        did the animal eat this step
     mated : boolean
         has the animal mated recently
     matedLast : int
@@ -31,7 +33,7 @@ class Animal:
         type of animal
     maxHunger : int
         maximum hunger before death
-    hunger : int
+    hunger : float
         current hunger level of animal
     steps :
         current age of animal
@@ -59,6 +61,7 @@ class Animal:
     sense = 3
     lifeSpan = 100
     beStill = False
+    ateFood = False
     mated = False
     matedLast = 0
     species = ""
@@ -73,7 +76,7 @@ class Animal:
             x,y location of the food, (Default None)
         maxHunger : int, optional
             maximum hunger before death, (Default 10)
-        hunger : int, optional
+        hunger : float, optional
             start hunger level of animal, (Default 0)
         age : int, optional
             start age of animal, (Default 0)
@@ -98,7 +101,7 @@ class Animal:
             direction to move the animal, acceptable range 0-8, (Default None)
         """
 
-        self.hunger = self.hunger + 1
+        self.ateFood = False
         self.steps = self.steps + 1
 
         # check if direction already determined
@@ -258,8 +261,8 @@ class Animal:
             other animal who reproduced
         """
 
-        self.hunger = self.hunger * 1.25
-        partner.hunger = partner.hunger * 1.25
+        self.hunger = self.hunger + 0.5
+        partner.hunger = partner.hunger + 0.5
 
     def hunt(self, foodArray):
         """
@@ -339,9 +342,9 @@ class Animal:
             if (((ax-tempx) > 0) and ((ay-tempy) > 0)):
                 return 7
 
-#########################################################################################################
-# Rabbit class used in ecosystem -----------------------------------------------------------------------#
-#########################################################################################################
+##############################################################################
+# Rabbit class used in ecosystem --------------------------------------------#
+##############################################################################
 class Rabbit(Animal):
     """
     A class used to represent Rabbits, subclass of Animal
@@ -403,15 +406,16 @@ class Rabbit(Animal):
             together = self.vicinityCheck(mushroom)
         if together:
             mushroom.eaten = True
+            self.ateFood = True
             # Larger batch of mushrooms is more satisfying for hunger
             if mushroom.size == 1:
-                self.hunger = self.hunger / 1.25       # Edit this value?
+                self.hunger = self.hunger - 1
             elif mushroom.size == 2:
-                self.hunger = self.hunger / 1.35       # Edit this value?
+                self.hunger = self.hunger - 2
             elif mushroom.size == 3:
-                self.hunger = self.hunger / 1.5       # Edit this value?
+                self.hunger = self.hunger - 3
             else:
-                self.hunger = self.hunger / 1.25      # unknown size value = to size 1
+                self.hunger = self.hunger - 1 # unknown size value = to size 1
 
     def reproduce(self, animalArray, rabbit):
         """
@@ -437,9 +441,9 @@ class Rabbit(Animal):
         minAge = 7 # need to be 8 months to reproduce
         return super().reproduce(animalArray, rabbit, minAge, baby)
 
-#########################################################################################################
-# Fox class used in ecosystem --------------------------------------------------------------------------#
-#########################################################################################################
+###############################################################################
+# Fox class used in ecosystem ------------------------------------------------#
+###############################################################################
 class Fox(Animal):
     """
     A class used to represent Foxes, subclass of Animal
@@ -496,11 +500,6 @@ class Fox(Animal):
         ---------
         rabbit : Rabbit
             rabbit trying to eat
-
-        Returns
-        -------
-        boolean
-            if fox was able to eat rabbit
         """
 
         together = False
@@ -508,9 +507,8 @@ class Fox(Animal):
             together = self.vicinityCheck(rabbit)
         if (together):
             rabbit.beStill = True
-            self.hunger = self.hunger / 1.25
-            return True
-        return False
+            self.ateFood = True
+            self.hunger = self.hunger - 1
 
     def interactMushroom(self, mushroom):
         """
@@ -527,15 +525,16 @@ class Fox(Animal):
             together = self.vicinityCheck(mushroom)
         if together:
             mushroom.eaten = True
+            self.ateFood = True
             # Larger batch of mushrooms is more satisfying for hunger, not as good as rabbits
             if mushroom.size == 1:
-                self.hunger = self.hunger / 1.1
+                self.hunger = self.hunger - 0.5
             elif mushroom.size == 2:
-                self.hunger = self.hunger / 1.15
+                self.hunger = self.hunger - 0.75
             elif mushroom.size == 3:
-                self.hunger = self.hunger / 1.25
+                self.hunger = self.hunger - 1
             else:
-                self.hunger = self.hunger / 1.1      # unknown size value = to size 1
+                self.hunger = self.hunger - 0.5 # unknown size value = to size 1
 
     def reproduce(self, animalArray, fox):
         """

@@ -13,6 +13,7 @@ from matplotlib import colors
 from matplotlib import animation
 from matplotlib import rc
 rc('animation', html='html5')
+from jupyterplot import ProgressPlot
 
 from Animal import Animal
 from Animal import Fox
@@ -31,6 +32,9 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
     sudo add-apt-repository ppa:mc3man/trusty-media
     sudo apt-get update
     sudo apt-get install ffmpeg
+
+For ProgressPlot to work, you might have to install jupyterplot
+    pip install jupyterplot
 """
 
 class Ecosystem:
@@ -349,9 +353,18 @@ class Ecosystem:
         img = plt.imshow(grid[::-1],cmap=cmap,norm=n,animated=True)
         ims = []
         frames = 0
+
+        pp = ProgressPlot(plot_names=["Population Growth"],
+                          line_names=["Mushrooms", "Foxes", "Rabbits"])
+
         # loop until a species is extinct
         while self.foxesDead == False and self.rabbitsDead == False:
             self.step()
+
+            # plot the population data in real-time
+            pp.update([[self.numMushrooms[-1],
+                        self.numFoxes[-1],
+                        self.numRabbits[-1]]])
 
             # plot ecosystem
             grid = self.mapToGrid()
@@ -361,6 +374,7 @@ class Ecosystem:
             if frames == maxFrames:
                 break
 
+        pp.finalize()
         return animation.ArtistAnimation(fig, ims, interval=200, blit=True,
                                         repeat_delay=1000)
 
@@ -381,19 +395,21 @@ class Ecosystem:
                 fox = self.foxes_array[i]
                 # check interactions with all foxes and rabbits
                 for j in range(max(currFoxes, currRabbits)):
-                    eatRabbit = False
                     if j != i and j < currFoxes:
                         # does the fox reproduce
                         fox.interactOwnSpecies(self.foxes_array[j], self.foxes_array, self.probLitter)
                     if j < currRabbits:
                         # does the fox eat a rabbit
-                        eatRabbit = fox.interactRabbit(self.rabbits_array[j])
+                        fox.interactRabbit(self.rabbits_array[j])
                     if j < currMush:
                         # does the fox eat a mushroom, if have not already eaten a rabbit
                         if self.omni == True:
-                            if not eatRabbit:
+                            if not fox.ateFood:
                                 fox.interactMushroom(self.mush_array[j])
                                 self.occupiedMush[self.mush_array[j].location[0]][self.mush_array[j].location[1]] = 0
+                # fox has interacted with everything, check if they ate food
+                if not fox.ateFood:
+                    fox.hunger = fox.hunger + 1
 
             # there are still rabbits
             if i < currRabbits:
@@ -407,6 +423,9 @@ class Ecosystem:
                         # does the rabbit eat a mushroom
                         rabbit.interactMushroom(self.mush_array[j])
                         self.occupiedMush[self.mush_array[j].location[0]][self.mush_array[j].location[1]] = 0
+                # rabbit has interacted with everything, check if they ate food
+                if not rabbit.ateFood:
+                    rabbit.hunger = rabbit.hunger + 1
 
             # there are still mushrooms
             if i < currMush:
@@ -519,7 +538,7 @@ class Ecosystem:
         plt.plot(x, self.numMushrooms, label='Mushrooms', color='b')
         xl = plt.xlabel("Sample frames")
         yl = plt.ylabel("Population")
-        t = plt.title("Population Growth")
+        t = plt.title("Population Growth - " + exp)
         legend = plt.legend()
         plt.grid(b=True, which='major', color='#ececec', linestyle='-')
         # save the plot
