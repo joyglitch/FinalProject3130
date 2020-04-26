@@ -32,6 +32,9 @@ ffmpeg.  On Ubuntu and Linux Mint, the following should work.
     sudo add-apt-repository ppa:mc3man/trusty-media
     sudo apt-get update
     sudo apt-get install ffmpeg
+
+For ProgressPlot to work, you might have to install jupyterplot
+    pip install jupyterplot
 """
 
 class Ecosystem:
