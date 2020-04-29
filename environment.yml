@@ -1,0 +1,19 @@
+name: creature
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - sphinx
+  - jupyter
+  - networkx=1.*
+  - nbstripout
+  - seaborn
+  - tqdm
+  - future
+  - pip
+  - pip:
+    - jupyterplot
