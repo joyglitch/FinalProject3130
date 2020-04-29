@@ -8,27 +8,13 @@ In our best interest, the objective of this project is to use and examine the [p
 
 The [populationGrowthModel](https://github.com/adityadua24/populationGrowthModel), made by Aditya Dua, is a simulation of three species inhabiting a forest together. The interactions between the species are pre-established, which impacts their population and chance of survival. The project is orginally written in MATLAB, so the model is converted to run in Python for execution.
 
-## Procedure
-The following scenarios will be tested with the project model:
+## Our Model
+An agent-based model was created to simulate population growth. In our model, a simple food chain is simulated consisting of mushrooms, rabbits, and foxes. The interactions of these species can be observed as the ecosystem evolves over time. Each species in the ecosystem acts as a different type of agent and has its own set of rules to govern its behaviour. Four species characteristics can be activated to investigate how they impact the overall ecosystem and population growth.
 
-* Mushroom < Rabbit < Fox
-* Mushroom < Rabbit & Mouse < Fox
-* Mushroom < Rabbit < Fox & Owl
-* Mushroom < Rabbit < Fox < Hunter
-
-In other words, the population model will have a food chain with at least 3 different species, and a different prey or predator species can be added to the system.
-
-To test the accuracy of this model, ecological data must be collected for the species used in the model.
-
-## Results & Discussion
-##### IN PROGRESS
-
-## Next Steps
-##### IN PROGRESS
-
-
-## Conclusion
-##### IN PROGRESS
+* hunting: Animals are able to hunt by checking their surroundings for prey and moving towards the prey
+* omnivores: Foxes behave as omnivores and eat mushrooms in addition to rabbits
+* decomposers: Mushrooms behave as decomposers and can spawn where animals have died of natural causes
+* probability litter: Animals have a probability of reproducing a litter within the range of zero to max litter size 
 
 ## Demo It Yourself
 
@@ -37,7 +23,7 @@ To try the model yourself, clone the repository by entering:
 ```bash
 git clone https://github.com/CyanRoepcke/FinalProject3130
 ```
-Then, run the `populationGrowthModel.m` file on MATLAB.
+Then, run the `creature.ipynb` file in Jupyter Notebook.
 
 
 ## Contributions
